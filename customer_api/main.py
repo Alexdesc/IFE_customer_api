@@ -1,14 +1,37 @@
-import json
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker, Session
 from schemas import CsvPaths
+from models import Base
 from services import process_csv
+
+SQLALCHEMY_DATABASE_URL = "sqlite:///./ife.db"
+
+engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False})
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
 @app.post("/import-csv/")
-def import_csv(paths: CsvPaths):
-    customer_content, purchases_content = process_csv(paths.customers_file_path, paths.purchased_file_path)
-    return {"Customers file": json.dump(customer_content), "Purchases file": json.dump(purchases_content)}
+def import_csv(paths: CsvPaths, db: Session = Depends(get_db)):
+    customers_content, purchases_content = process_csv(
+        db,
+        paths.customers_file_path, 
+        paths.purchased_file_path
+    )
+    return {
+        "Customers file": customers_content,
+        "Purchases file": purchases_content
+    }
 
 @app.post("/send-customers/")
 def create_item():

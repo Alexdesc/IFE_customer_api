@@ -11,7 +11,7 @@ class CsvPaths(BaseModel):
     customers_file_path: str
     purchased_file_path: str
 
-class customerCreate(BaseModel):
+class CustomerCreate(BaseModel):
     '''
     Class dedicated to store customers in pydantic objects
     '''
@@ -22,35 +22,10 @@ class customerCreate(BaseModel):
     city: str | None = ""
     email: EmailStr | None = ""
 
-class customerRead(BaseModel):
-    '''
-    Class dedicated to get customers in pydantic objects
-    '''
-    customer_id: int
-    title: int
-    lastname: str
-    firstname: str
-    postale_code: int
-    city: str
-    email: EmailStr
-
-class purchasesCreate(BaseModel):
+class PurchasesCreate(BaseModel):
     '''
     Class dedicated to store purchases in pydantic objects
     '''
-    customer_id: int
-    product_id: int
-    quantity: int
-    price: float
-    currency: str
-    date: date
-
-class purchasesRead(BaseModel):
-    '''
-    Class dedicated to get purchases in pydantic objects
-    '''
-    #purchase_identifier: constr(regex=r'^\d{1,2}/\d{2}$')
-    purchase_identifier: str
     customer_id: int
     product_id: int
     quantity: int

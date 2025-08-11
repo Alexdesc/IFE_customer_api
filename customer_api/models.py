@@ -1,0 +1,28 @@
+from sqlalchemy import Column, Integer, Float, String, Date, ForeignKey
+from sqlalchemy.orm import declarative_base, relationship
+
+Base = declarative_base()
+
+class Customers(Base):
+    __tablename__ = "customers"
+    id = Column(Integer, primary_key=True, index=True)
+    title = Column(Integer, default=0, nullable=True)
+    lastname = Column(String, default="", nullable=True)
+    firstname = Column(String, default="", nullable=True)
+    postale_code = Column(Integer, default=0, nullable=True)
+    city = Column(String, default="", nullable=True)
+    email = Column(String, default="", nullable=True)
+
+    purchases = relationship("Purchases", back_populates="customer")
+
+class Purchases(Base):
+    __tablename__ = "purchases"
+    id = Column(Integer, primary_key=True, index=True)
+    customer_id = Column(Integer, ForeignKey("customers.id"), nullable=False)
+    product_id = Column(Integer, nullable=False)
+    quantity = Column(Integer, nullable=False)
+    price = Column(Float, nullable=False)
+    currency = Column(String, nullable=False)
+    date = Column(Date, nullable=False)
+
+    customer = relationship("Customers", back_populates="purchases")
