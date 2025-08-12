@@ -6,7 +6,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
 from schemas import CsvPaths
 from models import Base
-from services import process_csv
+from services import process_csv, export_customers_with_purchases
 
 SQLALCHEMY_DATABASE_URL = "sqlite:///./ife.db"
 
@@ -37,5 +37,5 @@ def import_csv(paths: CsvPaths, db: Session = Depends(get_db)):
     }
 
 @app.post("/send-customers/")
-def create_item():
-    return {"message": "Hello again, FastAPI!"}
+def export_data(db: Session = Depends(get_db)):
+    return export_customers_with_purchases(db)

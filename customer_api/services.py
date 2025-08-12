@@ -22,7 +22,7 @@ def read_csv(path: Path, schema: Type[T]) -> list[T]:
     try:
         with open(path, encoding="utf-8", newline="") as file:
             for row in csv.DictReader(file, delimiter=";"):
-                data = {k: (v or "").strip() for k, v in row.items()}
+                data = {k: v.strip() if v and v.strip() != "" else None for k, v in row.items()}
                 try:
                     obj = schema(**data)
                     content.append(obj)
@@ -46,7 +46,7 @@ def add_customers(db: Session, customers: list[CustomerCreate]):
             title=people.title,
             lastname=people.lastname,
             firstname=people.firstname,
-            postale_code=people.postale_code,
+            postal_code=people.postal_code,
             city=people.city,
             email=people.email
         )
@@ -74,7 +74,8 @@ def add_purchases(db: Session, purchases: list[PurchasesCreate]):
 
 def process_csv(db: Session, customers_file_path: str, purchased_file_path: str):
     '''
-    Process the fastapi endpoint /import-csv/ 
+    Process the fastapi endpoint /import-csv/
+    @db : The opened SQLite session
     @customers_file_path : The local path to customer.csv
     @purchased_file_path : The local path to purchases.csv
     '''
@@ -86,3 +87,31 @@ def process_csv(db: Session, customers_file_path: str, purchased_file_path: str)
     add_purchases(db, purchases_content)
     
     return customers_content, purchases_content
+
+def export_customers_with_purchases(db: Session):
+    '''
+    Retrieves informations from database and format them
+    @db : The opened SQLite session
+    '''
+    title_map = {1: "Mrs.", 2: "Mr."}
+
+    data = [
+        {
+            "salutation": title_map.get(c.title, ""),
+            "last_name": c.lastname,
+            "first_name": c.firstname,
+            "email": c.email,
+            "purchases": [
+                {
+                    "product_id": p.product_id,
+                    "price": p.price,
+                    "currency": p.currency,
+                    "quantity": p.quantity,
+                    "purchased_at": p.date.isoformat()
+                }
+                for p in c.purchases
+            ]
+        }
+        for c in db.query(Customers).all()
+    ]
+    return data

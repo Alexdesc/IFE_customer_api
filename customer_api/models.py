@@ -15,7 +15,7 @@ class Customers(Base):
     title = Column(Integer, default=0, nullable=True)
     lastname = Column(String, default="", nullable=True)
     firstname = Column(String, default="", nullable=True)
-    postale_code = Column(Integer, default=0, nullable=True)
+    postal_code = Column(Integer, default=0, nullable=True)
     city = Column(String, default="", nullable=True)
     email = Column(String, default="", nullable=True)
 

@@ -2,7 +2,8 @@
 Pydantic schemas to verufy data integrity before pushing into SQL DB
 '''
 from datetime import date
-from pydantic import BaseModel, EmailStr, constr
+from typing import Optional
+from pydantic import BaseModel, EmailStr
 
 class CsvPaths(BaseModel):
     '''
@@ -19,8 +20,8 @@ class CustomerCreate(BaseModel):
     title: int
     lastname: str
     firstname: str
-    postale_code: int
-    city: str
+    postal_code: Optional[int] = None
+    city: Optional[str] = None
     email: EmailStr
 
 class PurchasesCreate(BaseModel):
