@@ -1,11 +1,17 @@
+'''
+Models schema to create both Customers and Purchases databases into SQL databases
+'''
 from sqlalchemy import Column, Integer, Float, String, Date, ForeignKey
 from sqlalchemy.orm import declarative_base, relationship
 
 Base = declarative_base()
 
 class Customers(Base):
+    '''
+    Database model in order to store Customer present in csv file
+    '''
     __tablename__ = "customers"
-    id = Column(Integer, primary_key=True, index=True)
+    customer_id = Column(Integer, primary_key=True, index=True)
     title = Column(Integer, default=0, nullable=True)
     lastname = Column(String, default="", nullable=True)
     firstname = Column(String, default="", nullable=True)
@@ -16,9 +22,12 @@ class Customers(Base):
     purchases = relationship("Purchases", back_populates="customer")
 
 class Purchases(Base):
+    '''
+    Database model in order to store Purchases present in csv file
+    '''
     __tablename__ = "purchases"
-    id = Column(Integer, primary_key=True, index=True)
-    customer_id = Column(Integer, ForeignKey("customers.id"), nullable=False)
+    purchase_identifier = Column(String, primary_key=True, index=True)
+    customer_id = Column(Integer, ForeignKey("customers.customer_id"), nullable=False)
     product_id = Column(Integer, nullable=False)
     quantity = Column(Integer, nullable=False)
     price = Column(Float, nullable=False)

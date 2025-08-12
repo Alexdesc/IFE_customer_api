@@ -1,3 +1,6 @@
+'''
+Main file used to create fastAPI instances, creation/session of SQLite database
+'''
 from fastapi import FastAPI, Depends
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
