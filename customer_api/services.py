@@ -50,7 +50,8 @@ def add_customers(db: Session, customers: list[CustomerCreate]):
             city=people.city,
             email=people.email
         )
-        db.add(db_customer)
+        # Merge if customer already exist
+        db.merge(db_customer)
     db.commit()
 
 def add_purchases(db: Session, purchases: list[PurchasesCreate]):
@@ -69,7 +70,8 @@ def add_purchases(db: Session, purchases: list[PurchasesCreate]):
             currency=transaction.currency,
             date=transaction.date
         )
-        db.add(db_purchase)
+        # Merge if purchase already exist
+        db.merge(db_purchase)
     db.commit()
 
 def process_csv(db: Session, customers_file_path: str, purchased_file_path: str):
@@ -86,7 +88,7 @@ def process_csv(db: Session, customers_file_path: str, purchased_file_path: str)
     add_customers(db, customers_content)
     add_purchases(db, purchases_content)
     
-    return customers_content, purchases_content
+    return True
 
 def export_customers_with_purchases(db: Session):
     '''
