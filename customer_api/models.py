@@ -8,7 +8,7 @@ Base = declarative_base()
 
 class Customers(Base):
     '''
-    Database model in order to store Customer present in csv file
+    Database model in order to store Customer in csv file
     '''
     __tablename__ = "customers"
     customer_id = Column(Integer, primary_key=True, index=True)
@@ -23,7 +23,7 @@ class Customers(Base):
 
 class Purchases(Base):
     '''
-    Database model in order to store Purchases present in csv file
+    Database model in order to store Purchases in csv file
     '''
     __tablename__ = "purchases"
     purchase_identifier = Column(String, primary_key=True, index=True)

@@ -1,5 +1,5 @@
 '''
-Pydantic schemas to verufy data integrity before pushing into SQL DB
+Pydantic schemas to verify data integrity before pushing into SQL DB
 '''
 from datetime import date
 from typing import Optional
