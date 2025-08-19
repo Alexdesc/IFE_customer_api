@@ -14,7 +14,7 @@ T = TypeVar("T")
 
 def read_csv(path: Path, schema: Type[T]) -> list[T]:
     '''
-    This function open and read a CSV file and then return a list of typed objects
+    Open and read a CSV file and then return a list of typed objects
     @path : Path of the file to open
     @schema : the desired dataclass type to return
     '''
@@ -22,12 +22,14 @@ def read_csv(path: Path, schema: Type[T]) -> list[T]:
     try:
         with open(path, encoding="utf-8", newline="") as file:
             for row in csv.DictReader(file, delimiter=";"):
-                data = {k: v.strip() if v and v.strip() != "" else None for k, v in row.items()}
+                # Build a new dictionary (data) from row
+                # Clean up strings (trims spaces) and converts blanks/empty values to None
+                data = {key: value.strip() if value and value.strip() != "" else None for key, value in row.items()}
                 try:
                     obj = schema(**data)
                     content.append(obj)
                 except ValidationError:
-                    # I use this except in oder to continue execution
+                    # I use this except in order to continue execution
                     # We can use a logger to log invalid lines
                     continue
         return content
@@ -50,7 +52,7 @@ def add_customers(db: Session, customers: list[CustomerCreate]):
             city=people.city,
             email=people.email
         )
-        # Merge if customer already exist
+        # Merge if customer already exists
         db.merge(db_customer)
     db.commit()
 
@@ -70,7 +72,7 @@ def add_purchases(db: Session, purchases: list[PurchasesCreate]):
             currency=transaction.currency,
             date=transaction.date
         )
-        # Merge if purchase already exist
+        # Merge if purchase already exists
         db.merge(db_purchase)
     db.commit()
 
@@ -92,28 +94,28 @@ def process_csv(db: Session, customers_file_path: str, purchased_file_path: str)
 
 def export_customers_with_purchases(db: Session):
     '''
-    Retrieves informations from database and format them
+    Get information from database and format it
     @db : The opened SQLite session
     '''
     title_map = {1: "Mrs.", 2: "Mr."}
 
     data = [
         {
-            "salutation": title_map.get(c.title, ""),
-            "last_name": c.lastname,
-            "first_name": c.firstname,
-            "email": c.email,
+            "salutation": title_map.get(customer.title, ""),
+            "last_name": customer.lastname,
+            "first_name": customer.firstname,
+            "email": customer.email,
             "purchases": [
                 {
-                    "product_id": p.product_id,
-                    "price": p.price,
-                    "currency": p.currency,
-                    "quantity": p.quantity,
-                    "purchased_at": p.date.isoformat()
+                    "product_id": purchase.product_id,
+                    "price": purchase.price,
+                    "currency": purchase.currency,
+                    "quantity": purchase.quantity,
+                    "purchased_at": purchase.date.isoformat()
                 }
-                for p in c.purchases
+                for purchase in customer.purchases
             ]
         }
-        for c in db.query(Customers).all()
+        for customer in db.query(Customers).all()
     ]
     return data
